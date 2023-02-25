@@ -1,0 +1,73 @@
+// $primary:rgb(102, 51, 153);
+$primary:linear-gradient(269.47deg, #FFB800 0.26%, #DD824F 128.56%);
+.f-35{
+    font-size: 35px;
+    @media only screen and (max-width:500px){
+      font-size: 30px;
+    }
+}
+.f-30{
+    font-size: 30px;
+    @media only screen and (max-width:500px){
+      font-size: 25px;
+    }
+}
+.f-25{
+    font-size: 25px;
+    @media only screen and (max-width:500px){
+      font-size: 20px;
+    }
+}
+.f-22{
+    font-size: 22px;
+    @media only screen and (max-width:500px){
+      font-size: 18px;
+    }
+}
+.f-20{
+    font-size: 20px;
+}
+.f-18{
+    font-size: 18px;
+}
+.f-16{
+    font-size: 16px;
+}
+.f-14{
+    font-size: 14px;
+}
+.f-12{
+    font-size: 12px;
+}
+.w-400{
+    font-weight: 400;
+}
+.w-500{
+    font-weight: 500;
+}
+.w-600{
+    font-weight: 600
+}
+.w-700{
+    font-weight: 700
+}
+.w-300{
+    font-weight: 300;
+}
+.font-rubika{
+    font-family: 'Rubik', sans-serif;
+}
+.text-light-grey{
+    color: #55525B;
+}
+.text-gray{
+   color: #a8a2a2;
+}
+.text-golden{
+    background: $primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.bg-dark{
+    background-color: black !important;
+}

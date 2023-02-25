@@ -1,0 +1,238 @@
+.profile-description {
+    background-color: #262E36;
+    padding: 20px;
+
+}
+
+.display-icon {
+    height: 60px;
+    width: 60px;
+    border-radius: 10px;
+    color: white;
+    font-size: 40px;
+    font-weight: 500;
+    background: $primary;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.user-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+}
+
+.no-decoration {
+    text-decoration: none;
+}
+
+.table-div {
+    padding: 20px;
+    border-radius: 3px;
+}
+
+.table-div2 {
+    padding: 20px;
+    border-radius: 3px;
+}
+
+.table-heading {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+.cart-img {
+    height: 100px;
+    width: auto;
+    object-fit: cover;
+}
+
+.cart-decription {
+    text-decoration: none;
+    color: white;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    // Addition lines for 2 line or multiline ellipsis
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+
+    &:hover {
+        color: $primary;
+    }
+
+}
+
+
+
+.wrapper {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.wrapper span {
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0px;
+    padding-bottom: 3px;
+    border-radius: 100%;
+
+}
+
+.wrapper span.num {
+    font-size: 16px;
+    pointer-events: none;
+    background-color: transparent;
+    color: white;
+    margin: 0px 10px;
+    font-weight: 500;
+}
+
+.bi-x-circle {
+    font-size: 22px;
+    cursor: pointer;
+
+    &:hover {
+        color: $primary !important;
+    }
+}
+
+.cart-btn {
+    background-color: transparent;
+    border: none;
+    width: 100% !important;
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: $primary;
+    text-decoration: none;
+    padding: 5px 0px;
+    border-radius: 5px;
+}
+
+.cart-btn2 {
+    background-color: transparent;
+    border: none;
+    width: 120px !important;
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    background: $primary;
+    text-decoration: none;
+    padding: 5px 0px;
+    border-radius: 5px;
+}
+
+.table-div {
+    @media only screen and (max-width:991px) {
+        overflow-x: auto;
+    }
+
+    .table {
+
+        @media only screen and (max-width:991px) {
+            width: 500px;
+        }
+    }
+}
+
+// ====================================pricing cards
+.pricing-card {
+    background-color: rgba(0, 0, 0, 0.822);
+    padding: 23px 15px;
+    border-radius: 3px;
+    border: 1px solid black;
+
+    &:hover {
+        border: 1px solid #d6a45d;
+        cursor: pointer;
+    }
+}
+
+.popular-tag {
+    background: $primary;
+    padding: 3px 10px !important;
+    border-radius: 7px;
+}
+
+.card-tag {
+    background-color: #a8a2a2;
+    padding: 3px 10px !important;
+    border-radius: 7px;
+}
+
+
+// ==========================sign up
+.form-body {
+    background: url('../images/5184015.jpg') !important;
+
+    background-position: center;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    min-height: 100vh;
+
+}
+
+.form-reg {
+    background-color: rgba(0, 0, 0, 0.822);
+    padding: 30px;
+}
+
+.sign-btn {
+    background: $primary;
+    padding: 7px 50px;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 5px;
+    margin: 5px 10px;
+    text-decoration: none;
+    border: 1px solid #FFB800;
+
+    &:hover {
+        color: white;
+    }
+}
+
+.active-sign {
+    background: $primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    border: 1px solid #FFB800;
+}
+
+.sign-input {
+    background-color: transparent;
+    color: white !important;
+    border: 1px solid gray;
+
+    &:focus {
+        outline: none;
+        box-shadow: none;
+        background-color: transparent;
+    }
+}
+
+.table>:not(:last-child)>:last-child>* {
+    border-bottom-color: #dee2e6 !important;
+}
