@@ -219,6 +219,20 @@ main {
   color: #ffffff;
   padding: 8px 18px; }
 
+.select-country {
+  background: #000000;
+  color: #ffffff;
+  padding: 8px 18px;
+  border: 1px solid gray; }
+  .select-country:focus {
+    outline: none;
+    box-shadow: none; }
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0; }
+
 .grid-item {
   overflow: hidden; }
 
@@ -589,7 +603,8 @@ footer {
   border-radius: 5px;
   margin: 5px 10px;
   text-decoration: none;
-  border: 1px solid #FFB800; }
+  border: 1px solid #FFB800;
+  cursor: pointer; }
   .sign-btn:hover {
     color: white; }
 

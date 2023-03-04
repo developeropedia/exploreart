@@ -14,7 +14,11 @@ if(isset($_POST['offset'])) {
     $sort_by = !empty($sort_by) ? $sort_by : 'p.created_at';
     $q = !empty($search) ? $search : '';
 
-    $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM products p INNER JOIN users u on p.user_id = u.id INNER JOIN categories c on p.cat_id = c.id";
+    if(isset($_POST['userID'])) {
+        $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM products p INNER JOIN users u on p.user_id = u.id INNER JOIN categories c on p.cat_id = c.id WHERE u.id = {$_POST['userID']}";
+    } else {
+        $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM products p INNER JOIN users u on p.user_id = u.id INNER JOIN categories c on p.cat_id = c.id";
+    }
 
     if (!empty($q)) {
         $q = urldecode($q);

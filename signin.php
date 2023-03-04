@@ -31,10 +31,10 @@
                 <form action="" class="form-reg">
                 <div class="d-flex justify-content-center align-items-center  flex-wrap">
                     <div class="mb-3">
-                        <a href="sign-up.html" class="sign-btn  active-sign"><i class="bi bi-person-fill-add f-20 me-1"></i>Sign Up</a>
+                        <a href="signup.php" class="sign-btn  active-sign"><i class="bi bi-person-fill-add f-20 me-1"></i>Sign Up</a>
                     </div>
                     <div class="mb-3">
-                        <a href="sign-in.html" class="sign-btn "><i class="bi bi-person-check f-20 me-1"></i> Sign In</a>
+                        <a href="signin.php" class="sign-btn "><i class="bi bi-person-check f-20 me-1"></i> Sign In</a>
                     </div>
                 </div>
                

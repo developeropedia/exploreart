@@ -37,11 +37,14 @@ include_once "includes/functions.php";
                 </div>
             </div>
             <div class="  d-flex align-items-center ">
-                <form class="d-flex mx-auto ">
+                <form class="d-flex mx-auto " method="get" action="<?php echo isset($_GET['id']) ? 'profile.php' : '' ?>" role="search">
                     <div class="search-input mx-auto">
                         <i class="bi bi-search"></i>
                         <input name="q" class="search-input--input me-2 mx-auto" type="search" placeholder="Search">
                     </div>
+                    <?php if(isset($_GET['id'])): ?>
+                        <input type="hidden" name="id" value="<?php echo $_GET['id'] ?>">
+                    <?php endif; ?>
 
                 </form>
 
@@ -61,7 +64,7 @@ include_once "includes/functions.php";
                             <li><a class="dropdown-item" href="#"><i class="bi bi-question-square me-1"></i> Request
                                     Help</a></li>
                             </li>
-                            <li><a class="dropdown-item" href="sign-in.html"><i class="bi bi-box-arrow-right me-1"></i> Log
+                            <li><a class="dropdown-item" href="signin.php"><i class="bi bi-box-arrow-right me-1"></i> Sign
                                     In</a></li>
                         </ul>
                     </div>

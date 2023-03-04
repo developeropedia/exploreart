@@ -87,6 +87,25 @@
     padding: 8px 18px;
 }
 
+.select-country {
+    background: #000000;
+    color: #ffffff;
+    padding: 8px 18px;
+    border: 1px solid gray;
+
+    &:focus {
+        outline: none;
+        box-shadow: none;
+    }
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
 //.custom-select {
 //    position: relative;
 //    font-family: Arial;

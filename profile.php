@@ -2,6 +2,37 @@
 
 include "includes/header.php";
 
+if(!isset($_GET['id'])) {
+    redirect("index.php");
+}
+
+$limit = LIMIT;
+
+$categories = findAll("categories");
+
+$sort = ["price-ascending" => "price", "price-descending" => "price", "date-ascending" => "p.created_at", "date-descending" => "p.created_at"];
+$order = ["price-ascending" => "ASC", "price-descending" => "DESC", "date-ascending" => "ASC", "date-descending" => "DESC"];
+
+$sort_by = $_GET['sort_by'] ?? 'p.created_at';
+$q = $_GET['q'] ?? '';
+
+$query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM products p INNER JOIN users u on p.user_id = u.id INNER JOIN categories c on p.cat_id = c.id WHERE u.id = {$_GET['id']}";
+
+if (!empty($q)) {
+    $q = urldecode($q);
+    $query .= isset($_GET['id']) ? " AND p.name LIKE '%{$q}%'" : " WHERE p.name LIKE '%{$q}%'";
+}
+
+if ($sort_by != 'p.created_at') {
+    $query .= " ORDER BY {$sort[$sort_by]} {$order[$sort_by]}";
+} else {
+    $query .= " ORDER BY p.created_at DESC";
+}
+
+$query .= " LIMIT {$limit} OFFSET 0";
+
+$products = findAllByQuery($query);
+
 ?>
 
         <div class="profile-description">
@@ -10,9 +41,9 @@ include "includes/header.php";
                     <div class="col-lg-12">
                         <div class="d-flex justify-content-start align-items-center">
                             <div class="display-icon ">
-                                A
+                                <?php echo substr($products[0]->username, 0, 1) ?>
                             </div>
-                            <h1 class="user-name">AIDEN RYU</h1>
+                            <h1 class="user-name"><?php echo $products[0]->username ?></h1>
                         </div>
                         
                     </div>
@@ -23,610 +54,266 @@ include "includes/header.php";
            <div class="col-lg-12">
             <div class="d-flex justify-content-end mt-3 mb-3">
                 <div class="custom-select">
-                    <select>
-                        <option value="0">Sort By</option>
-                        <option value="1">Sort1</option>
-                        <option value="2">Sort2</option>
-
+                    <select id="sort_by" class="select-sort">
+                        <option selected disabled>Sort By</option>
+                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, low to high</option>
+                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, high to low</option>
+                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, old to new</option>
+                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, new to old</option>
                     </select>
                 </div>
             </div>
            </div>
             <div class="row">
                 <div class="col-lg-12">
-
-                    <!-- <div class="d-flex align-items-center ">
-
-                        <div id="filters" class="button-group d-flex justify-content-center pt-4 pb-3 w-100">
-                            <button class="button is-checked filter-btns" data-filter="*">All</button>
-                            <button class="button filter-btns" data-filter=".metal">Category1</button>
-                            <button class="button filter-btns" data-filter=".transition">Category2</button>
-                        </div>
-                        <select class="form-select select-category" aria-label="Default select example">
-                            <option selected>Select</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                          </select>
-                    </div>
-                     -->
-
+                    <input type="hidden" id="offset" value="0">
                     <div class="grid">
                         <div class="grid-sizer"></div>
-                        <div class="grid-item metal" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/13.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
+                        <?php if(!empty($products)): ?>
+                            <?php foreach ($products as $product): ?>
+                                <div class="grid-item <?php echo str_replace(' ', '', $product->catName) ?>" data-id="<?php echo $product->productID ?>">
+                                    <img src="assets/images/<?php echo $product->img ?>" class="img-fluid" />
+                                    <div class="image-caption">
+                                        <div class="d-flex justify-content-between">
+                                            <a href="profile.php?id=<?php echo $product->userID ?>" class="d-flex align-items-center">
+                                                <div class="caption-logo me-1">
+                                                    <?php echo substr($product->username, 0, 1) ?>
+                                                </div>
+                                                <h1 class="m-0 p-0 text-golden"><?php echo $product->username ?></h1>
+                                            </a>
+                                            <div>
+                                                <i class="bi bi-bag"></i>
+                                            </div>
                                         </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
+
+                                        <div>
+                                            <h2><?php echo $product->productName ?></h2>
+                                            <p class="mb-0 pb-0"><?php echo $product->description ?></p>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item transition metal " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/14.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item metal" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/15.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item transition" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/16.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item metal" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/17.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item  transition  element-item " data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
-                            <img src="assets/images/1.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item  transition  " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/10.jpeg" class="img-fluid " />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item  metal  " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/11.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item  transition metal" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/12.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid-item transition metal" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/2.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/3.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/4.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/5.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/6.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/7.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/8.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="assets/images/9.jpeg" class="img-fluid" />
-                            <div class="image-caption">
-                                <div class="d-flex justify-content-between">
-                                    <a href="profile.php" class="d-flex align-items-center">
-                                        <div class="caption-logo me-1">
-                                            Ai
-                                        </div>
-                                        <h1 class="m-0 p-0">Caption</h1>
-                                    </a>
-                                    <div>
-                                        <i class="bi bi-bag"></i>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h2>Small Caption</h2>
-                                    <p class="mb-0 pb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. A et
-                                        architecto officia obcaecati voluptatibus corporis similique iusto hic esse
-                                        impedit!</p>
-                                </div>
-                            </div>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-
-
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-lg-12">
-                    <section class="image-grid">
-                        <div class="container-xxl">
-                          <div class="row gy-4">
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland1.jpg" class="img-fluid" alt="Ring of Kerry, County Kerry, Ireland" data-caption="Ring of Kerry, County Kerry, Ireland">
-                                </a>
-                              </figure>
-                              
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland2.jpg" class="img-fluid" alt="Fintown, Ireland" data-caption="Fintown, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland3.jpg" class="img-fluid" alt="Anne Street, Dublin, Ireland" data-caption="Anne Street, Dublin, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland4.jpg" class="img-fluid" alt="Doonagore Castle, Doolin, Ireland" data-caption="Doonagore Castle, Doolin, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland5.jpg" class="img-fluid" alt="Connemara National Park, Letterfrack, Ireland" data-caption="Connemara National Park, Letterfrack, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland6.jpg" class="img-fluid" alt="Galway, Ireland" data-caption="Galway, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland7.jpg" class="img-fluid" alt="Connemara National Park, Letterfrack, Ireland" data-caption="Connemara National Park, Letterfrack, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland8.jpg" class="img-fluid" alt="The Forty Foot, Dublin 18, Ireland" data-caption="The Forty Foot, Dublin 18, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-4">
-                              <figure>
-                                <a class="d-block" href="">
-                                  <img width="1920" height="1280" src="https://assets.codepen.io/162656/ireland9.jpg" class="img-fluid" alt="Coliemore Harbour, Dublin, Ireland" data-caption="Coliemore Harbour, Dublin, Ireland">
-                                </a>
-                              </figure>
-                            </div>
-                          </div>
-                        </div>
-                      </section>
-                      
-                      <div class="modal lightbox-modal" id="lightbox-modal" tabindex="-1">
-                        <div class="modal-dialog modal-fullscreen">
-                          <div class="modal-content">
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                            <div class="modal-body">
-                              <div class="container-fluid p-0">
-                                <!-- JS content here -->
-            <!-- </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                </div>
-            </div> -->
         </div>
 
-<!-- -modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <!-- Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
 
-            <div class="modal-body">
-                <div class="slide-arrow">
-                    <i class="bi bi-chevron-left"></i>
-                </div>
-                <div class="modal-body-content">
-                    <div class="container-fluid p-0 m-0">
-                        <div class="row p-0 m-0">
-                            <div class="small-caption">
+                <div class="modal-body">
+                    <div class="slide-arrow" id="slide-left">
+                        <i class="bi bi-chevron-left"></i>
+                    </div>
+                    <div class="modal-body-content">
+                        <div class="container-fluid p-0 m-0">
+                            <div class="row p-0 m-0">
+                                <div class="small-caption">
 
-                                <div class="slide-img-text">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <div class="d-flex align-items-center ">
-                                            <div class="caption-logo me-2 ">
-                                                Ai
+                                    <div class="slide-img-text">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <div class="d-flex align-items-center ">
+                                                <div class="caption-logo me-2 ">
+                                                    Ai
+                                                </div>
+                                                <a href="profile.php" class="m-0 p-0 f-16 w-500 text-white no-decoration">Caption</a>
+
                                             </div>
-                                            <a href="profile.php" class="m-0 p-0 f-16 w-500 text-white no-decoration">Caption</a>
-
-                                        </div>
-                                        <p class="mb-0 pb-0 text-white" data-bs-dismiss="modal">
-                                            <i class="bi bi-x-lg"></i>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 ">
-
-                                <div class="lightbox-images">
-                                    <img src="assets/images/15.jpeg" alt="" class="">
-                                </div>
-                            </div>
-                            <div class="col-lg-6 d-flex flex-column justify-content-between align-items-stretch">
-                                <div>
-                                    <div class="lg-caption">
-                                        <div class="d-flex justify-content-end  text-white">
                                             <p class="mb-0 pb-0 text-white" data-bs-dismiss="modal">
                                                 <i class="bi bi-x-lg"></i>
                                             </p>
                                         </div>
-                                        <div class="slide-img-text">
-                                            <div class="d-flex align-items-center">
-                                                <div class="caption-logo me-2">
-                                                    Ai
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 ">
+
+                                    <div class="lightbox-images">
+                                        <img id="modal-img" src="assets/images/15.jpeg" alt="" class="">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 d-flex flex-column justify-content-between align-items-stretch">
+                                    <div>
+                                        <div class="lg-caption">
+                                            <div class="d-flex justify-content-end  text-white">
+                                                <p class="mb-0 pb-0 text-white" data-bs-dismiss="modal">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </p>
+                                            </div>
+                                            <div class="slide-img-text">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="caption-logo me-2">
+                                                        Ai
+                                                    </div>
+                                                    <a href="profile.php" id="username" class="m-0 p-0 f-16 w-500 text-white no-decoration">Caption</a>
                                                 </div>
-                                                <a href="profile.php" class="m-0 p-0 f-16 w-500 text-white no-decoration">Caption</a>
                                             </div>
                                         </div>
+
+                                        <h1 id="product-name" class="m-0 p-0 f-25 w-600 text-white py-3">
+                                            Analog style
+                                        </h1>
+
+                                        <h2 class="f-14 w-600 text-light-grey mt-4 mb-2">Credits</h2>
+                                        <p id="product-credits" class="mb-0 pb-0 f-20 w-500 text-white">
+                                            $1000
+                                        </p>
+                                        <h2 class="f-14 w-600 text-light-grey mt-4 mb-2">Description</h2>
+
+                                        <p id="product-description" class="mb-0 pb-0 f-12 w-500 text-white">
+                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae architecto maiores placeat ipsum odio quis suscipit voluptatem sit in eveniet optio rerum doloremque natus obcaecati at nobis, enim facere ex.
+                                        </p>
                                     </div>
 
-                                    <h1 class="m-0 p-0 f-25 w-600 text-white py-3">
-                                        Analog style
-                                    </h1>
-
-                                    <h2 class="f-14 w-600 text-light-grey mt-4 mb-2">Price</h2>
-                                    <p class="mb-0 pb-0 f-20 w-500 text-white">
-                                        $1000
-                                    </p>
-                                    <h2 class="f-14 w-600 text-light-grey mt-4 mb-2">Description Heading</h2>
-
-                                    <p class="mb-0 pb-0 f-12 w-500 text-white">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae architecto maiores placeat ipsum odio quis suscipit voluptatem sit in eveniet optio rerum doloremque natus obcaecati at nobis, enim facere ex.
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <a href="pricing.php" class="no-decoration"><button class="slide-btn mt-4 mb-2"> <i class="bi bi-bag me-2"></i>Buy</button></a>
+                                    <div>
+                                        <a href="pricing.php" class="no-decoration"><button class="slide-btn mt-4 mb-2"> <i class="bi bi-bag me-2"></i>Buy</button></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="slide-arrow">
-                    <i class="bi bi-chevron-right"></i>
+                    <div class="slide-arrow"  id="slide-right">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 <?php
 
 include "includes/footer.php";
 
 ?>
+
+<script>
+    var products = <?php echo json_encode($products) ?>;
+    var productID, prevProduct, nextProduct;
+
+    // Open modal on product click
+    $(document).on('click', '.grid-item', function () {
+        productID = $(this).attr("data-id");
+        var product = products.find(item => item.productID == productID);
+        prevProduct = products[products.indexOf(product) - 1];
+        nextProduct = products[products.indexOf(product) + 1];
+
+        if(!prevProduct) {
+            $("#slide-left").addClass("disabled-arrow")
+        } else {
+            $("#slide-left").removeClass("disabled-arrow")
+        }
+
+        if(!nextProduct) {
+            $("#slide-right").addClass("disabled-arrow")
+        } else {
+            $("#slide-right").removeClass("disabled-arrow")
+        }
+
+        console.log(product)
+        generateProduct(product)
+
+        var modal = $('#productModal');
+        modal.modal('show')
+    })
+
+    // Previous product in modal
+    $("#slide-left").click(function () {
+        generateProduct(prevProduct)
+        nextProduct = products[products.indexOf(prevProduct) + 1];
+
+        prevProduct = products[products.indexOf(prevProduct) - 1];
+        if(!prevProduct) {
+            $("#slide-left").addClass("disabled-arrow")
+        } else {
+            $("#slide-left").removeClass("disabled-arrow")
+        }
+
+        $("#slide-right").removeClass("disabled-arrow")
+    })
+
+    // Next product in modal
+    $("#slide-right").click(function () {
+        generateProduct(nextProduct)
+        prevProduct = products[products.indexOf(nextProduct) - 1];
+
+        nextProduct = products[products.indexOf(nextProduct) + 1];
+        if(!nextProduct) {
+            $("#slide-right").addClass("disabled-arrow")
+        } else {
+            $("#slide-right").removeClass("disabled-arrow")
+        }
+
+        $("#slide-left").removeClass("disabled-arrow")
+    })
+
+    function generateProduct(product) {
+        $(".caption-logo").text(product.username.charAt(0))
+        $("#modal-img").attr("src", "assets/images/" + product.img)
+        $("#username").text(product.username)
+        $("#username").attr("href", "profile.php?id=" + product.userID)
+        $("#product-name").text(product.productName)
+        $("#product-credits").text(product.price)
+        $("#product-description").text(product.description)
+    }
+
+    $(document).ready(function () {
+        var isLoading = false;
+
+        $(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() == $(document).height() && !isLoading) {
+                // $(".custom-loader").removeClass("d-none")
+
+                var totalProducts = $('.grid-item').length;
+                var offset = totalProducts;
+                var limit = <?php echo $limit ?>;
+                isLoading = true;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const sortBy = urlParams.get('sort_by');
+                const search = urlParams.get('q');
+                const userID = urlParams.get('id');
+
+                $.ajax({
+                    url: "includes/ajax.php",
+                    method: "post",
+                    data: {offset, limit, sortBy, search, userID},
+                    success: function (response) {
+                        var productsData = JSON.parse(response)
+                        var items = "";
+                        productsData.forEach((item) => {
+                            products.push(item)
+                            items += `<div class="grid-item ${item.catName.replace(' ', '')}" data-id="${item.productID}"> <img src="assets/images/${item.img}" class="img-fluid" /> <div class="image-caption"> <div class="d-flex justify-content-between"> <a href="profile.php?id=${item.userID}" class="d-flex align-items-center"> <div class="caption-logo me-1"> ${item.username.charAt(0)} </div> <h1 class="m-0 p-0 text-golden">${item.username}</h1> </a> <div> <i class="bi bi-bag"></i> </div> </div> <div> <h2>${item.productName}</h2> <p class="mb-0 pb-0">${item.description}</p> </div> </div> </div>`;
+                        })
+                        items = $(items);
+                        $grid.append(items).isotope('appended', items)
+                        $grid.isotope('layout')
+                        $grid.imagesLoaded().progress(function () {
+                            $grid.isotope('layout');
+                        });
+                        // $(".custom-loader").addClass("d-none")
+                        isLoading = false;
+                    },
+                    error: function() {
+                        isLoading = false;
+                    }
+                })
+            }
+        });
+    })
+
+
+    function sleep(delay) {
+        var start = new Date().getTime();
+        while (new Date().getTime() < start + delay);
+    }
+
+    $('#sort_by').on("change", function () {
+        location.href = "profile.php?" + $(this).val()
+    })
+
+</script>
+

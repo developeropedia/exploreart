@@ -2,7 +2,7 @@
 
 include "includes/header.php";
 
-$limit = 10;
+$limit = LIMIT;
 
 $categories = findAll("categories");
 
@@ -16,7 +16,6 @@ $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.
 
 if (!empty($q)) {
     $q = urldecode($q);
-    echo $q;
     $query .= " WHERE p.name LIKE '%{$q}%'";
 }
 
@@ -294,6 +293,9 @@ include "includes/footer.php";
                         items = $(items);
                         $grid.append(items).isotope('appended', items)
                         $grid.isotope('layout')
+                        $grid.imagesLoaded().progress(function () {
+                            $grid.isotope('layout');
+                        });
                         // $(".custom-loader").addClass("d-none")
                         isLoading = false;
                     },
