@@ -40,9 +40,9 @@ function login()
         $username = $_POST['username'];
         $password = $_POST['password'];
 
-        $query = 'SELECT * FROM users WHERE username = ? AND is_admin = ? LIMIT 1';
+        $query = 'SELECT * FROM users WHERE username = ? LIMIT 1';
         $stmt = $conn->prepare($query);
-        $stmt->execute([$username, 1]);
+        $stmt->execute([$username]);
         $user = $stmt->fetch();
 
         //Check if username is correct
@@ -53,10 +53,10 @@ function login()
                 $_SESSION['user'] = $user->id;
                 redirect('index.php');
             } else {
-                return "<p class='text-danger fw-bold m-0 p-0'>Username or password is wrong!</p>";
+                return "<p class='text-danger text-center fw-bold m-0 p-0'>Username or password is wrong!</p>";
             }
         } else {
-            return "<p class='text-danger fw-bold m-0 p-0'>Username or password is wrong!</p>";
+            return "<p class='text-danger text-center fw-bold m-0 p-0'>Username or password is wrong!</p>";
         }
     }
 }

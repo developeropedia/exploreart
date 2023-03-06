@@ -1,3 +1,11 @@
+<?php
+
+include_once "includes/functions.php";
+
+$msg = login();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,13 +30,13 @@
             <div class="col-lg-6">
                 <div class="d-flex justify-content-center mb-3">
                     <div class="d-flex align-items-center ">
-                        <img src="assets/images/logo.svg" alt="" class="img-fluid me-2" style="width: 25px;">
+                        <img src="assets/images/<?php echo getSettings("logo") ?>" alt="" class="img-fluid me-2" style="width: 25px;">
                         <a class="no-decoration " href="index.php">
-                            <h1 class="m-0 p-0 f-20 w-700 text-golden">Explore Art</h1>
+                            <h1 class="m-0 p-0 f-20 w-700 text-golden"><?php echo getSettings("title") ?></h1>
                         </a>
                     </div>
                 </div>
-                <form action="" class="form-reg">
+                <form action="" method="post" class="form-reg">
                 <div class="d-flex justify-content-center align-items-center  flex-wrap">
                     <div class="mb-3">
                         <a href="signup.php" class="sign-btn  active-sign"><i class="bi bi-person-fill-add f-20 me-1"></i>Sign Up</a>
@@ -37,17 +45,21 @@
                         <a href="signin.php" class="sign-btn "><i class="bi bi-person-check f-20 me-1"></i> Sign In</a>
                     </div>
                 </div>
+                    
+                    <div>
+                        <?php echo $msg ?? "" ?>
+                    </div>
                
                   <div class="mb-3">
-                    <label for="exampleInputEmail1 " class="form-label text-gray f-14 w-500 ">Email</label>
-                    <input type="email" class="form-control sign-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <label for="username" class="form-label text-gray f-14 w-500 ">Username</label>
+                    <input type="text" name="username" class="form-control sign-input" id="username">
                   </div>
                   <div class="mb-3">
-                    <label for="exampleInputEmail1 " class="form-label text-gray f-14 w-500 "> Password</label>
-                    <input type="password" class="form-control sign-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <label for="password" class="form-label text-gray f-14 w-500 "> Password</label>
+                    <input type="password" name="password" class="form-control sign-input" id="password">
                   </div>
                   <div class="d-flex justify-content-end">
-                    <a href="index.php" class="sign-btn">Sign In</a>
+                    <button type="submit" name="login" class="sign-btn">Sign In</button>
                 </div>
                 </form>
             </div>
