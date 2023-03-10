@@ -1,0 +1,132 @@
+@media only screen and (max-width:1100px) {
+    .table-user{
+        width: 1100px !important;
+             }
+}
+@media only screen and (max-width:991px) {
+    .f-29{
+        font-size: 26px;
+    }
+    .f-28{
+        font-size: 25px;
+    }
+    .f-24{
+        font-size: 22px;
+    }
+    .f-26{
+        font-size: 24px;
+    }
+    .f-20{
+        font-size: 18px;
+    }
+    .f-18{
+        font-size: 16px;
+    }
+    .col-50 {
+        width: 100% !important;
+    }
+
+    .log-form {
+        flex-direction: column;
+        padding: 30px 10px;
+
+    }
+
+    .form-content {
+        width: 50%;
+        padding: 20px 15px;
+    }
+
+    .form-info {
+        display: none;
+
+    }
+
+    .form-content h1 {
+        font-size: 20px;
+        font-weight: 600;
+        justify-content: center;
+        text-align: center !important;
+    }
+
+    .form-content p {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .log-form-label{
+        font-size: 14px !important;
+    }
+    .form-check-label{
+    font-size: 12px;
+    
+    }
+
+    .link {
+        font-size: 12px;
+
+    }
+    .mobile-log-logo{
+        display: flex !important;
+    }
+    .mobile-menu{
+        display: block;
+    }
+    .sidebar-nav{
+        /* display: none; */
+        position: fixed;
+        top: 0;
+        bottom: 0px !important;
+        z-index: 10;
+        left: -280px;
+        transition: all .5s;
+    }
+    .main-section{
+        width: 100%;
+    }
+    .admin-name{
+        display: none !important;
+    }
+    .mobile-search-section{
+        width: 100%;
+    }
+    .header-search{
+        width: 100%;
+    }
+    .header-search input{
+        width: 100%;
+    }
+    .header{
+        height: 60px;
+        width: 100%;
+        background-color: var(--black);
+        padding: 10px 15px;
+     }
+     .side-logout{
+        display: flex !important;
+     }
+    
+}
+@media only screen and (max-width:776px) {
+    .f-29{
+        font-size: 25px;
+    }
+    .f-28{
+        font-size: 24px;
+    }
+    .f-24{
+        font-size: 20px;
+    }
+    .f-26{
+        font-size: 22px;
+    }
+   
+    .form-content {
+        width: 180%;
+    }
+    .main-contents{
+padding: 5px !important;
+    }
+
+
+}

@@ -2,7 +2,7 @@
 
 include_once "includes/functions.php";
 
-$msg = login();
+$msg = login(2);
 
 ?>
 

@@ -18,7 +18,7 @@ error_reporting(E_ALL);
 
 if (isset($_GET['a']) && $_GET['a'] == 'logout') {
     unset($_SESSION['user']);
-    redirect('login.php');
+    redirect('signin.php');
 }
 
 include_once 'config.php';
@@ -32,7 +32,7 @@ function redirect($location)
     echo "<script>window.location.href='" . $location . "'</script>";
 }
 
-function login()
+function login($role = null)
 {
     global $conn;
 
@@ -40,7 +40,11 @@ function login()
         $username = $_POST['username'];
         $password = $_POST['password'];
 
-        $query = 'SELECT * FROM users WHERE username = ? LIMIT 1';
+        $query = 'SELECT * FROM users WHERE username = ?';
+        if(!empty($role)) {
+            $query .= " AND role = {$role}";
+        }
+        $query .= " LIMIT 1";
         $stmt = $conn->prepare($query);
         $stmt->execute([$username]);
         $user = $stmt->fetch();
