@@ -193,7 +193,23 @@ input[type=number]::-webkit-inner-spin-button {
 //.same-as-selected {
 //    background-color: rgba(0, 0, 0, 0.1);
 //}
-
+.custom-select {
+    @media only screen and (max-width:991px){
+        width: 100%;
+    }
+    select{
+        font-size: 14px;
+        font-weight: 500;
+        //color: #e2e8f0;
+        //background-color: transparent !important;
+        border: 1px solid #6c6c6c !important;
+        border-radius: 4px;
+        padding: 7px 10px;
+        @media only screen and (max-width:991px){
+            width: 100%;
+        }
+    }
+}
 
 
 
@@ -505,4 +521,9 @@ footer{
     to {
         transform: rotate(360deg);
     }
+}
+
+
+.no-product-row {
+    min-height: 72vh !important;
 }

@@ -6,6 +6,8 @@ if(isset($_SESSION['user'])) {
     $user = findById("users", $_SESSION['user']);
 }
 
+const PAGES = ['index.php', 'profile.php', 'collection.php'];
+
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +43,7 @@ if(isset($_SESSION['user'])) {
                 </div>
             </div>
             <div class="  d-flex align-items-center ">
-                <form class="d-flex mx-auto " method="get" action="<?php echo isset($_GET['id']) ? 'profile.php' : '' ?>" role="search">
+                <form class="d-flex mx-auto " method="get" action="<?php echo !in_array(basename($_SERVER['PHP_SELF']), PAGES) ? 'index.php' : '' ?>" role="search">
                     <div class="search-input mx-auto">
                         <i class="bi bi-search"></i>
                         <input name="q" class="search-input--input me-2 mx-auto" type="search" placeholder="Search">
@@ -70,9 +72,13 @@ if(isset($_SESSION['user'])) {
                             <?php endif; ?>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-question-square me-1"></i> Request
                                     Help</a></li>
-                            </li>
-                            <li><a class="dropdown-item" href="signin.php"><i class="bi bi-box-arrow-right me-1"></i> Sign
-                                    In</a></li>
+                            <?php if(isset($_SESSION['user'])): ?>
+                                <li><a class="dropdown-item" href="plan.php"><i class="bi bi-calendar2-check me-1"></i> My Plan</a></li>
+                                <li><a class="dropdown-item" href="my-profile.php"><i class="bi bi-person me-1"></i> Profile</a></li>
+                            <?php else: ?>
+                                <li><a class="dropdown-item" href="signin.php"><i class="bi bi-box-arrow-right me-1"></i> Sign
+                                        In</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>

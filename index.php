@@ -38,7 +38,7 @@ $products = findAllByQuery($query);
             <div class="col-lg-3">
 
             </div>
-            <div class="col-lg-6 order-sm-2 ">
+            <div class="col-lg-6  order-sm-2 ">
                 <div id="filters" class="button-group d-flex justify-content-center  w-100 pb-3 pt-1">
                     <button class="button is-checked filter-btns active-category" data-filter="*">All</button>
                     <?php if(!empty($categories)): ?>
@@ -48,7 +48,7 @@ $products = findAllByQuery($query);
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="col-lg-3 d-flex justify-content-end order-sm-1 pb-3">
+            <div class="col-lg-3 d-flex justify-content-lg-end justify-content-center order-sm-1 pb-3">
 
                 <div class="custom-select">
                     <select id="sort_by" class="select-sort">
@@ -92,12 +92,12 @@ $products = findAllByQuery($query);
                         </div>
                     <?php endforeach; ?>
                     <?php else: ?>
-                    <div class="row">
-                        <div class="col-lg-12 mt-5 d-flex justify-content-center align-items-center">
-                            <img class="img-fluid" width="200px" src="assets/images/No%20data-cuate.svg" alt="">
+                        <div class="row no-product-row">
+                            <div class="col-lg-12  d-flex justify-content-center align-items-center flex-column">
+                                <img class="img-fluid" width="200px" src="assets/images/No%20data-cuate.svg" alt="">
+                                <p class="text-golden fw-bold text-center mb-0 pb-0">No product found</p>
+                            </div>
                         </div>
-                        <p class="text-golden fw-bold text-center">No product found</p>
-                    </div>
                     <?php endif; ?>
                 </div>
             </div>

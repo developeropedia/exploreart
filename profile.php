@@ -37,76 +37,79 @@ $products = findAllByQuery($query);
 
 ?>
 
-        <div class="profile-description">
-            <div class="container-fluid">
+<div class="profile-description">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="display-icon ">
+                        <?php echo substr($user->username, 0, 1) ?>
+                    </div>
+                    <h1 class="user-name"><?php echo $user->username ?></h1>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        <main style="min-height: calc(83vh - 110px) !important;">
+
+            <div class="container-fluid mt-3">
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-end mt-3 mb-3">
+                        <div class="custom-select">
+                            <select id="sort_by" class="select-sort">
+                                <option selected disabled>Sort By</option>
+                                <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, low to high</option>
+                                <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, high to low</option>
+                                <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, old to new</option>
+                                <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, new to old</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div class="display-icon ">
-                                <?php echo substr($user->username, 0, 1) ?>
-                            </div>
-                            <h1 class="user-name"><?php echo $user->username ?></h1>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid mt-3">
-           <div class="col-lg-12">
-            <div class="d-flex justify-content-end mt-3 mb-3">
-                <div class="custom-select">
-                    <select id="sort_by" class="select-sort">
-                        <option selected disabled>Sort By</option>
-                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, low to high</option>
-                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'price-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=price-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Credits, high to low</option>
-                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-ascending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-ascending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, old to new</option>
-                        <option <?php echo isset($_GET['sort_by']) && $_GET['sort_by'] == 'date-descending' ? 'selected' : '' ?> value="id=<?php echo $_GET['id'] ?>&sort_by=date-descending<?php echo isset($_GET['q']) ? '&q=' . $_GET['q'] : '' ?>">Date, new to old</option>
-                    </select>
-                </div>
-            </div>
-           </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <input type="hidden" id="offset" value="0">
-                    <div class="grid">
-                        <div class="grid-sizer"></div>
-                        <?php if(!empty($products)): ?>
-                            <?php foreach ($products as $product): ?>
-                                <div class="grid-item <?php echo str_replace(' ', '', $product->catName) ?>" data-id="<?php echo $product->productID ?>">
-                                    <img src="assets/images/<?php echo $product->img ?>" class="img-fluid" />
-                                    <div class="image-caption">
-                                        <div class="d-flex justify-content-between">
-                                            <a href="profile.php?id=<?php echo $product->userID ?>" class="d-flex align-items-center">
-                                                <div class="caption-logo me-1">
-                                                    <?php echo substr($product->username, 0, 1) ?>
+                        <input type="hidden" id="offset" value="0">
+                        <div class="grid">
+                            <div class="grid-sizer"></div>
+                            <?php if(!empty($products)): ?>
+                                <?php foreach ($products as $product): ?>
+                                    <div class="grid-item <?php echo str_replace(' ', '', $product->catName) ?>" data-id="<?php echo $product->productID ?>">
+                                        <img src="assets/images/<?php echo $product->img ?>" class="img-fluid" />
+                                        <div class="image-caption">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="profile.php?id=<?php echo $product->userID ?>" class="d-flex align-items-center">
+                                                    <div class="caption-logo me-1">
+                                                        <?php echo substr($product->username, 0, 1) ?>
+                                                    </div>
+                                                    <h1 class="m-0 p-0 text-golden"><?php echo $product->username ?></h1>
+                                                </a>
+                                                <div>
+                                                    <i class="bi bi-bag"></i>
                                                 </div>
-                                                <h1 class="m-0 p-0 text-golden"><?php echo $product->username ?></h1>
-                                            </a>
+                                            </div>
+
                                             <div>
-                                                <i class="bi bi-bag"></i>
+                                                <h2><?php echo $product->productName ?></h2>
+                                                <p class="mb-0 pb-0"><?php echo $product->description ?></p>
                                             </div>
                                         </div>
-
-                                        <div>
-                                            <h2><?php echo $product->productName ?></h2>
-                                            <p class="mb-0 pb-0"><?php echo $product->description ?></p>
-                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="row no-product-row" style="min-height: calc(72vh - 100px) !important;">
+                                    <div class="col-lg-12  d-flex justify-content-center align-items-center flex-column">
+                                        <img class="img-fluid" width="200px" src="assets/images/No%20data-cuate.svg" alt="">
+                                        <p class="text-golden fw-bold text-center mb-0 pb-0">No product found</p>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="row">
-                                <div class="col-lg-12 mt-5 d-flex justify-content-center align-items-center">
-                                    <img class="img-fluid" width="200px" src="assets/images/No%20data-cuate.svg" alt="">
-                                </div>
-                                <p class="text-golden fw-bold text-center">No product found</p>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
 
 <!-- Modal -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">

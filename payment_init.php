@@ -17,6 +17,12 @@ if (isset($_POST['request_type'])) {
         $user = findById("users", $_SESSION['user']);
         $planDb = findById("plans", $_POST['planID']);
 
+        $subscriptionExists = findByQuery("SELECT * FROM subscriptions WHERE user_id = {$user->id} AND plan_id = {$planDb->id} AND status = 1");
+        if(!empty($subscriptionExists)) {
+            echo json_encode(['exists' => true]);
+            die();
+        }
+
         $errors = array();
         $token = $_POST['token'];
 
@@ -137,6 +143,23 @@ if (isset($_POST['request_type'])) {
 
             $userCredits = $plan->credits + (($plan->credits / 100) * $plan->bonus);
             update("users", ['subscription_id' => $subscriptionId, 'credits' => $userCredits], "id", $_SESSION['user']);
+
+            $prevSubscription = findAllByQuery("SELECT * FROM subscriptions WHERE user_id = {$_SESSION['user']} AND status = 1 ORDER BY id ASC");
+            if(count($prevSubscription) > 1) {
+                try {
+                    // Retrieve the subscription object
+                    $subscription = \Stripe\Subscription::retrieve($prevSubscription[0]->subscription_id);
+
+                    // Cancel the subscription
+                    $canceled_subscription = $subscription->cancel();
+
+                    update("subscriptions", ['status' => 0], "subscription_id", $subscription->id);
+
+                } catch (\Stripe\Exception\InvalidRequestException $e) {
+                    // Handle the error
+                    $error = 'Error: ' . $e->getMessage();
+                }
+            }
 
             echo json_encode(['payment_id' => base64_encode($payment_id)]);
         } else {

@@ -160,6 +160,9 @@ include "includes/footer.php";
                 if(response.error) {
                     displayError.textContent = response.error.message;
                     displayError.style.display = 'block';
+                } else if(response.exists) {
+                    displayError.innerHTML = "You already have this plan <br> <a href='pricing.php' class='text-golden text-center'>Choose other</a>";
+                    displayError.style.display = 'block';
                 } else {
                     displayError.style.display = 'none';
                     processPayment(response.subscriptionId, response.clientSecret, response.customerId);
