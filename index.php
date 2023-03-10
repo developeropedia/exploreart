@@ -91,6 +91,13 @@ $products = findAllByQuery($query);
                             </div>
                         </div>
                     <?php endforeach; ?>
+                    <?php else: ?>
+                    <div class="row">
+                        <div class="col-lg-12 mt-5 d-flex justify-content-center align-items-center">
+                            <img class="img-fluid" width="200px" src="assets/images/No%20data-cuate.svg" alt="">
+                        </div>
+                        <p class="text-golden fw-bold text-center">No product found</p>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -167,7 +174,7 @@ $products = findAllByQuery($query);
                                 </div>
 
                                 <div>
-                                    <a href="pricing.php" class="no-decoration"><button class="slide-btn mt-4 mb-2"> <i class="bi bi-bag me-2"></i>Buy</button></a>
+                                    <a class="no-decoration buy-btn" id="buy-btn" data-credits="<?php echo 1 ?>"><button class="slide-btn mt-4 mb-2"> <i class="bi bi-bag me-2"></i>Buy</button></a>
                                 </div>
                             </div>
                         </div>
@@ -183,12 +190,41 @@ $products = findAllByQuery($query);
     </div>
 </div>
 
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body d-flex justify-content-center">
+                <div class="modal-body-content">
+                    <div class="container-fluid p-0 m-0">
+                        <div class="row p-0 m-0">
+                            <p class="mb-0 pb-0 text-white d-flex justify-content-end" data-bs-dismiss="modal">
+                                <i class="bi bi-x-lg"></i>
+                            </p>
+
+                            <div class="col-lg-12">
+                                <p class="text-golden text-center fw-bold f-20" id="purchase-text">Do you want to unlock this art for <span id="purchase-art-credits"></span> credits</p>
+                                <div class="d-flex justify-content-center">
+                                    <img src="assets/images/padlock.svg" width="100" class="img-fluid" id="purchase-img" alt="">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <a class="no-decoration" id="purchaseConfirm" data-confirm-id="1"><button class="slide-btn mt-4 mb-2" id="slider-purchase-btn"> <i class="bi bi-bag-check me-2"></i>Confirm</button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--<div class="d-flex justify-content-center py-3">-->
 <!--    <div class="custom-loader d-none"></div>-->
 <!--</div>-->
 
 <?php
-
+//unset($_SESSION['user']);
 include "includes/footer.php";
 
 ?>
@@ -196,125 +232,6 @@ include "includes/footer.php";
 <script>
     var products = <?php echo json_encode($products) ?>;
     var productID, prevProduct, nextProduct;
-
-    // Open modal on product click
-    $(document).on('click', '.grid-item', function () {
-        productID = $(this).attr("data-id");
-        var product = products.find(item => item.productID == productID);
-        prevProduct = products[products.indexOf(product) - 1];
-        nextProduct = products[products.indexOf(product) + 1];
-
-        if(!prevProduct) {
-            $("#slide-left").addClass("disabled-arrow")
-        } else {
-            $("#slide-left").removeClass("disabled-arrow")
-        }
-
-        if(!nextProduct) {
-            $("#slide-right").addClass("disabled-arrow")
-        } else {
-            $("#slide-right").removeClass("disabled-arrow")
-        }
-
-        console.log(product)
-        generateProduct(product)
-
-        var modal = $('#productModal');
-        modal.modal('show')
-    })
-
-    // Previous product in modal
-    $("#slide-left").click(function () {
-        generateProduct(prevProduct)
-        nextProduct = products[products.indexOf(prevProduct) + 1];
-
-        prevProduct = products[products.indexOf(prevProduct) - 1];
-        if(!prevProduct) {
-            $("#slide-left").addClass("disabled-arrow")
-        } else {
-            $("#slide-left").removeClass("disabled-arrow")
-        }
-
-        $("#slide-right").removeClass("disabled-arrow")
-    })
-
-    // Next product in modal
-    $("#slide-right").click(function () {
-        generateProduct(nextProduct)
-        prevProduct = products[products.indexOf(nextProduct) - 1];
-
-        nextProduct = products[products.indexOf(nextProduct) + 1];
-        if(!nextProduct) {
-            $("#slide-right").addClass("disabled-arrow")
-        } else {
-            $("#slide-right").removeClass("disabled-arrow")
-        }
-
-        $("#slide-left").removeClass("disabled-arrow")
-    })
-
-    function generateProduct(product) {
-        $(".caption-logo").text(product.username.charAt(0))
-        $("#modal-img").attr("src", "assets/images/" + product.img)
-        $("#username").text(product.username)
-        $("#username").attr("href", "profile.php?id=" + product.userID)
-        $("#product-name").text(product.productName)
-        $("#product-credits").text(product.price)
-        $("#product-description").text(product.description)
-    }
-
-    $(document).ready(function () {
-        var isLoading = false;
-
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() == $(document).height() && !isLoading) {
-                // $(".custom-loader").removeClass("d-none")
-
-                var totalProducts = $('.grid-item').length;
-                var offset = totalProducts;
-                var limit = <?php echo $limit ?>;
-                isLoading = true;
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const sortBy = urlParams.get('sort_by');
-                const search = urlParams.get('q');
-
-                $.ajax({
-                    url: "includes/ajax.php",
-                    method: "post",
-                    data: {offset, limit, sortBy, search},
-                    success: function (response) {
-                        var productsData = JSON.parse(response)
-                        var items = "";
-                        productsData.forEach((item) => {
-                            products.push(item)
-                            items += `<div class="grid-item ${item.catName.replace(' ', '')}" data-id="${item.productID}"> <img src="assets/images/${item.img}" class="img-fluid" /> <div class="image-caption"> <div class="d-flex justify-content-between"> <a href="profile.php?id=${item.userID}" class="d-flex align-items-center"> <div class="caption-logo me-1"> ${item.username.charAt(0)} </div> <h1 class="m-0 p-0 text-golden">${item.username}</h1> </a> <div> <i class="bi bi-bag"></i> </div> </div> <div> <h2>${item.productName}</h2> <p class="mb-0 pb-0">${item.description}</p> </div> </div> </div>`;
-                        })
-                        items = $(items);
-                        $grid.append(items).isotope('appended', items)
-                        $grid.isotope('layout')
-                        $grid.imagesLoaded().progress(function () {
-                            $grid.isotope('layout');
-                        });
-                        // $(".custom-loader").addClass("d-none")
-                        isLoading = false;
-                    },
-                    error: function() {
-                        isLoading = false;
-                    }
-                })
-            }
-        });
-    })
-
-
-    function sleep(delay) {
-        var start = new Date().getTime();
-        while (new Date().getTime() < start + delay);
-    }
-
-    $('#sort_by').on("change", function () {
-        location.href = "index.php?" + $(this).val()
-    })
+    var limit = <?php echo $limit ?>;
 
 </script>

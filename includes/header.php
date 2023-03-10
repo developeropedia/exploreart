@@ -2,6 +2,10 @@
 
 include_once "includes/functions.php";
 
+if(isset($_SESSION['user'])) {
+    $user = findById("users", $_SESSION['user']);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +65,9 @@ include_once "includes/functions.php";
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <?php if(isset($user) && !empty($user)): ?>
+                                <li class="text-golden f-16 text-center total-credits" style="font-weight: 800">Credits <?php echo $user->credits ?></li>
+                            <?php endif; ?>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-question-square me-1"></i> Request
                                     Help</a></li>
                             </li>

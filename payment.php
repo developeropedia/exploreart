@@ -64,7 +64,7 @@ $customer = findById("users", $_SESSION['user']);
                             <input type="hidden" name="plan_id" id="plan_id" value="<?php echo $_GET['id'] ?>">
                             <button type="submit" name="login" class="sign-btn fw-bold">PAY</button>
                         </div>
-                        <p id="stripe-error" style="display: none"></p>
+                        <p id="stripe-error" class="text-danger text-center" style="display: none"></p>
                     </form>
                 </div>
             </div>
@@ -97,6 +97,8 @@ include "includes/footer.php";
         }
     };
 
+    var displayError = document.getElementById('stripe-error');
+
     // Create an instance of the card Element
     var card = elements.create('card', {hidePostalCode: true, style: style});
 
@@ -105,7 +107,6 @@ include "includes/footer.php";
 
     // Handle real-time validation errors from the card Element.
     card.addEventListener('change', function(event) {
-        var displayError = document.getElementById('stripe-error');
         if (event.error) {
             displayError.textContent = event.error.message;
             displayError.style.display = 'block';
@@ -157,8 +158,10 @@ include "includes/footer.php";
             success: function (response) {
                 response = JSON.parse(response)
                 if(response.error) {
-                   alert(response.error)
+                    displayError.textContent = response.error.message;
+                    displayError.style.display = 'block';
                 } else {
+                    displayError.style.display = 'none';
                     processPayment(response.subscriptionId, response.clientSecret, response.customerId);
                 }
             },
@@ -170,6 +173,7 @@ include "includes/footer.php";
 
     function processPayment(subscriptionId, clientSecret, customerId) {
         var customer = <?php echo json_encode($customer); ?>;
+        var planID = $('#plan_id').val()
 
         // Create payment method and confirm payment intent.
         stripe.confirmCardPayment(clientSecret, {
@@ -188,13 +192,22 @@ include "includes/footer.php";
             }
         }).then((result) => {
             if(result.error) {
-                console.log(result.error)
+                displayError.textContent = result.error.message;
+                displayError.style.display = 'block';
             } else {
-                console.log(result.paymentIntent)
                 $.ajax({
                     url: "payment_init.php",
                     method: 'post',
-                    data: {request_type: 'process_payment', subscriptionId, customerId, payment_intent: result.paymentIntent}
+                    data: {request_type: 'process_payment', subscriptionId, customerId, payment_intent: result.paymentIntent, planID},
+                    success: function (response) {
+                        response = JSON.parse(response)
+                        if(response.error) {
+                            displayError.textContent = response.error;
+                            displayError.style.display = 'block';
+                        } else {
+                            location.href = "success.php?id=" + response.payment_id
+                        }
+                    }
                 })
             }
         });
