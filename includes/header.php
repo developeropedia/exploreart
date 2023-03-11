@@ -42,8 +42,17 @@ const PAGES = ['index.php', 'profile.php', 'collection.php'];
                     </a>
                 </div>
             </div>
+            <?php
+            if (isset($PAGE) && $PAGE == 'shop') {
+                $action = 'shop.php';
+            } else if (!in_array(basename($_SERVER['PHP_SELF']), PAGES)) {
+                $action = 'index.php';
+            } else {
+                $action = '';
+            }
+            ?>
             <div class="  d-flex align-items-center ">
-                <form class="d-flex mx-auto " method="get" action="<?php echo !in_array(basename($_SERVER['PHP_SELF']), PAGES) ? 'index.php' : '' ?>" role="search">
+                <form class="d-flex mx-auto " method="get" action="<?php echo $action ?>" role="search">
                     <div class="search-input mx-auto">
                         <i class="bi bi-search"></i>
                         <input name="q" class="search-input--input me-2 mx-auto" type="search" placeholder="Search">
@@ -58,6 +67,12 @@ const PAGES = ['index.php', 'profile.php', 'collection.php'];
             <div class=" d-flex align-items-center ">
 
 
+                <div class="btn-cart me-2">
+                    <span class="cart-count d-none">0</span>
+                    <a class="btn btn-secondary " href="cart.php">
+                        <i class="bi bi-bag user-btn"></i>
+                    </a>
+                </div>
                 <div class="ms-auto">
 
                     <div class="dropdown">
@@ -72,6 +87,7 @@ const PAGES = ['index.php', 'profile.php', 'collection.php'];
                             <?php endif; ?>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-question-square me-1"></i> Request
                                     Help</a></li>
+                            <li><a class="dropdown-item" href="shop.php"><i class="bi bi-shop me-1"></i> Shop</a></li>
                             <?php if(isset($_SESSION['user'])): ?>
                                 <li><a class="dropdown-item" href="plan.php"><i class="bi bi-calendar2-check me-1"></i> My Plan</a></li>
                                 <li><a class="dropdown-item" href="my-profile.php"><i class="bi bi-person me-1"></i> Profile</a></li>
@@ -82,6 +98,7 @@ const PAGES = ['index.php', 'profile.php', 'collection.php'];
                         </ul>
                     </div>
                 </div>
+
             </div>
         </div>
     </nav>

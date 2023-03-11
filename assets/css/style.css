@@ -503,6 +503,27 @@ footer {
 .no-product-row {
   min-height: 72vh !important; }
 
+.btn-cart {
+  position: relative; }
+  .btn-cart .cart-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    font-size: 11px;
+    border-radius: 50%;
+    background: #d60b28;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    display: block;
+    text-align: center;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    margin-top: -5px;
+    margin-right: -5px; }
+
 .profile-description {
   background-color: #262E36;
   padding: 20px; }
@@ -691,3 +712,67 @@ footer {
 
 .table > :not(:last-child) > :last-child > * {
   border-bottom-color: #dee2e6 !important; }
+
+.text-justify {
+  text-align: justify; }
+
+.details-row {
+  background-color: rgba(0, 0, 0, 0.822);
+  padding: 20px;
+  border-radius: 20px; }
+
+.product-card {
+  border: 2px solid #FFB800;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  background-color: rgba(0, 0, 0, 0.822); }
+  .product-card-img {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    overflow: hidden; }
+    @media only screen and (max-width: 771px) {
+      .product-card-img {
+        height: auto; } }
+    .product-card-img img {
+      height: 100%;
+      width: 100%;
+      transition: all .5s; }
+      .product-card-img img:hover {
+        transform: scale(1.1); }
+
+.product-card-text {
+  padding: 10px 10px; }
+  .product-card-text h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%; }
+    .product-card-text h2 span {
+      font-size: 18px;
+      color: #FFB800; }
+  .product-card-text p {
+    font-size: 12px;
+    color: white;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%; }
+
+@media only screen and (max-width: 771px) {
+  .btn-cart {
+    position: fixed !important;
+    top: 85%;
+    right: 0; } }
+
+@media only screen and (max-width: 771px) {
+  .btn-cart .btn-secondary {
+    padding: 5px 15px;
+    border: none !important;
+    border-radius: 3px 0px 0px 3px; } }

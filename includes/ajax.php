@@ -2,7 +2,7 @@
 
 include_once "functions.php";
 
-if(isset($_POST['offset'])) {
+if(isset($_POST['offset']) && isset($_POST['page']) && $_POST['page'] != "shop.php") {
     $offset = $_POST['offset'];
     $limit = $_POST['limit'];
     $sort_by = $_POST['sortBy'];
@@ -27,6 +27,46 @@ if(isset($_POST['offset'])) {
         if(isset($_POST['userID']) && !empty($_POST['userID'])) {
             $query .= " AND p.name LIKE '%{$q}%'";
         } else if(isset($_POST['page']) && !empty($_POST['page'])) {
+            $query .= " AND p.name LIKE '%{$q}%'";
+        } else {
+            $query .= " WHERE p.name LIKE '%{$q}%'";
+        }
+    }
+
+    if ($sort_by != 'p.created_at') {
+        $query .= " ORDER BY {$sort[$sort_by]} {$order[$sort_by]}";
+    } else {
+        $query .= " ORDER BY p.created_at DESC";
+    }
+
+    $query .= " LIMIT {$limit} OFFSET {$offset}";
+
+    $products = findAllByQuery($query);
+
+    echo json_encode($products);
+}
+
+if(isset($_POST['page']) && $_POST['page'] == "shop.php") {
+    $offset = $_POST['offset'];
+    $limit = $_POST['limit'];
+    $sort_by = $_POST['sortBy'];
+    $search = $_POST['search'];
+
+    $sort = ["price-ascending" => "price", "price-descending" => "price", "date-ascending" => "p.created_at", "date-descending" => "p.created_at"];
+    $order = ["price-ascending" => "ASC", "price-descending" => "DESC", "date-ascending" => "ASC", "date-descending" => "DESC"];
+
+    $sort_by = !empty($sort_by) ? $sort_by : 'p.created_at';
+    $q = !empty($search) ? $search : '';
+
+    if(isset($_POST['catID']) && !empty($_POST['catID'])) {
+        $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM shop_products p INNER JOIN users u on p.user_id = u.id INNER JOIN shop_categories c on p.shop_cat_id = c.id WHERE p.shop_cat_id = {$_POST['catID']}";
+    } else {
+        $query = "SELECT *, p.id AS productID, p.name AS productName, u.id AS userID, c.id AS catID, c.name AS catName FROM shop_products p INNER JOIN users u on p.user_id = u.id INNER JOIN shop_categories c on p.shop_cat_id = c.id";
+    }
+
+    if (!empty($q)) {
+        $q = urldecode($q);
+        if(isset($_POST['catID']) && !empty($_POST['catID'])) {
             $query .= " AND p.name LIKE '%{$q}%'";
         } else {
             $query .= " WHERE p.name LIKE '%{$q}%'";
@@ -84,4 +124,26 @@ if(isset($_POST['confirmPurchase'])) {
     } else {
         echo json_encode(['error', "Purchase was not successful! Try again later."]);
     }
+}
+
+if(isset($_POST['cart'])) {
+//    setcookie("cart", "", time() - 30 * 24 * 60 * 60, "/");
+    $productId = $_POST['productID'];
+    $cartItems = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart']) : array();
+    if (!in_array($productId, $cartItems)) {
+        $cartItems[] = $productId;
+        setcookie("cart", json_encode($cartItems), time() + 30 * 24 * 60 * 60, "/");
+        echo json_encode(['success' => "Product added to cart!"]);
+    } else {
+        echo json_encode(['error' => "Already added to cart!"]);
+    }
+}
+
+if(isset($_POST['deleteCart'])) {
+    $productID = $_POST['productID'];
+
+    $cartItems = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart']) : array();
+    unset($cartItems[array_search($productID, $cartItems)]);
+    $cartItems = array_values($cartItems);
+    setcookie("cart", json_encode($cartItems), time() + 30 * 24 * 60 * 60, "/");
 }

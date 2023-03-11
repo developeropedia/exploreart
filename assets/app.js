@@ -1,4 +1,10 @@
-
+if(Cookies.get("cart") !== undefined) {
+    var cartItems = JSON.parse(Cookies.get("cart"));
+    if(cartItems.length != 0) {
+        $('.cart-count').removeClass('d-none')
+        $('.cart-count').text(cartItems.length)
+    }
+}
 
 
 // ==========================grid layout
@@ -126,43 +132,78 @@ $(document).ready(function () {
         if($(window).scrollTop() + $(window).height() == $(document).height() && !isLoading) {
             // $(".custom-loader").removeClass("d-none")
 
-            var totalProducts = $('.grid-item').length;
-            var offset = totalProducts;
-            isLoading = true;
+            if (typeof page !== 'undefined' && page === 'shop') {
+                var totalProducts = $('.shop-products').length;
+                var offset = totalProducts;
+                isLoading = true;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const sortBy = urlParams.get('sort_by');
-            const search = urlParams.get('q');
-            const userID = urlParams.get('id')
+                const urlParams = new URLSearchParams(window.location.search);
+                const sortBy = urlParams.get('sort_by');
+                const search = urlParams.get('q');
+                const catID = urlParams.get('cid')
 
-            var url = window.location.href
-            var filename = url.split('/').pop(); // get the last element of the array
-            filename = filename.split('?')[0];
+                var url = window.location.href
+                var filename = url.split('/').pop(); // get the last element of the array
+                filename = filename.split('?')[0];
 
-            $.ajax({
-                url: "includes/ajax.php",
-                method: "post",
-                data: {offset, limit, sortBy, search, userID : userID != null ? userID : "", page: filename === "collection.php" ? "collection.php" : "" },
-                success: function (response) {
-                    var productsData = JSON.parse(response)
-                    var items = "";
-                    productsData.forEach((item) => {
-                        products.push(item)
-                        items += `<div class="grid-item ${item.catName.replace(' ', '')}" data-id="${item.productID}"> <img src="assets/images/${item.img}" class="img-fluid" /> <div class="image-caption"> <div class="d-flex justify-content-between"> <a href="profile.php?id=${item.userID}" class="d-flex align-items-center"> <div class="caption-logo me-1"> ${item.username.charAt(0)} </div> <h1 class="m-0 p-0 text-golden">${item.username}</h1> </a> <div> <i class="bi bi-bag"></i> </div> </div> <div> <h2>${item.productName}</h2> <p class="mb-0 pb-0">${item.description}</p> </div> </div> </div>`;
-                    })
-                    items = $(items);
-                    $grid.append(items).isotope('appended', items)
-                    $grid.isotope('layout')
-                    $grid.imagesLoaded().progress(function () {
-                        $grid.isotope('layout');
-                    });
-                    // $(".custom-loader").addClass("d-none")
-                    isLoading = false;
-                },
-                error: function() {
-                    isLoading = false;
-                }
-            })
+                limit = limit === 'undefined' ? "" : limit
+
+                $.ajax({
+                    url: "includes/ajax.php",
+                    method: "post",
+                    data: {offset, limit, sortBy, search, catID : catID != null ? catID : "", page: filename === "shop.php" ? "shop.php" : "" },
+                    success: function (response) {
+                        var productsData = JSON.parse(response)
+                        productsData.forEach((item) => {
+                            $('.shop-products-main').append(`<div class="col-lg-3 col-md-5 col-sm-8 col-12 shop-products"> <a href="product.php?id=${item.productID}" class="no-decoration"> <div class="product-card"> <div class="product-card-img"> <img src="assets/images/${item.img}" alt=""> </div> <div class="product-card-text"> <h2 class="mb-0 mb-1">${item.productName}</h2> <p class="">by ${item.username}</p> <h2><span>$${item.price}</span></h2> </div> </div> </a> </div>`)
+                        })
+                        isLoading = false;
+                    },
+                    error: function() {
+                        isLoading = false;
+                    }
+                })
+            } else {
+                var totalProducts = $('.grid-item').length;
+                var offset = totalProducts;
+                isLoading = true;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const sortBy = urlParams.get('sort_by');
+                const search = urlParams.get('q');
+                const userID = urlParams.get('id')
+
+                var url = window.location.href
+                var filename = url.split('/').pop(); // get the last element of the array
+                filename = filename.split('?')[0];
+
+                limit = limit === 'undefined' ? "" : limit
+
+                $.ajax({
+                    url: "includes/ajax.php",
+                    method: "post",
+                    data: {offset, limit, sortBy, search, userID : userID != null ? userID : "", page: filename === "collection.php" ? "collection.php" : "" },
+                    success: function (response) {
+                        var productsData = JSON.parse(response)
+                        var items = "";
+                        productsData.forEach((item) => {
+                            products.push(item)
+                            items += `<div class="grid-item ${item.catName.replace(' ', '')}" data-id="${item.productID}"> <img src="assets/images/${item.img}" class="img-fluid" /> <div class="image-caption"> <div class="d-flex justify-content-between"> <a href="profile.php?id=${item.userID}" class="d-flex align-items-center"> <div class="caption-logo me-1"> ${item.username.charAt(0)} </div> <h1 class="m-0 p-0 text-golden">${item.username}</h1> </a> <div> <i class="bi bi-bag"></i> </div> </div> <div> <h2>${item.productName}</h2> <p class="mb-0 pb-0">${item.description}</p> </div> </div> </div>`;
+                        })
+                        items = $(items);
+                        $grid.append(items).isotope('appended', items)
+                        $grid.isotope('layout')
+                        $grid.imagesLoaded().progress(function () {
+                            $grid.isotope('layout');
+                        });
+                        // $(".custom-loader").addClass("d-none")
+                        isLoading = false;
+                    },
+                    error: function() {
+                        isLoading = false;
+                    }
+                })
+            }
         }
     });
 })
